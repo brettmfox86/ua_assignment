@@ -24,7 +24,7 @@ contacts = [
 
 # GET - Get a list of contacts, optionally filtering by a search query.
 #     The API must support searching by at least one field (e.g., email address).
-def get_contacts()
+# def get_contacts()
 # POST - Create a new contact
 # GET - Get a contact
 # PATCH - Replace a contact's data
