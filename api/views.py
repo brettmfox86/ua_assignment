@@ -13,25 +13,31 @@ CONTACTS_LIST = [
         "first_name": "Brett",
         "last_name": "Fox",
         "email": "brettfox@email.com",
-        "phone_number": "5555555555"
+        "phone_number": "5555555555",
+        "entered_by": "admin",
+        "updated_by": None
     },
     {
         "id": "e1473de5-dc9d-497b-9541-beff4f9e988e",
         "first_name": "John",
         "last_name": "Guy",
         "email": "Johnguy@email.com",
-        "phone_number": "5555555552"
+        "phone_number": "5555555552",
+        "entered_by": "admin",
+        "updated_by": None
     },
     {
         "id": "958b38bd-827c-4e45-9775-3fa7c547a524",
         "first_name": "Jane",
         "last_name": "Fox",
         "email": "Janewoman@email.com",
-        "phone_number": "5555555556"
+        "phone_number": "5555555556",
+        "entered_by": "admin",
+        "updated_by": None
     }
 ]
 
-CONTACT_FIELDS = ['first_name', 'last_name', 'email', 'phone_number']
+REQUIRED_CONTACT_FIELDS = ['first_name', 'last_name', 'email', 'phone_number']
 
 
 @csrf_exempt
@@ -58,7 +64,8 @@ def contacts(request):
     # POST - Create a new contact.
     elif request.method == 'POST':
         # Authenticate based on Authentication credentials located in the header
-        if not authenticate(request.META['HTTP_AUTHORIZATION']):
+        user = authenticate(request)
+        if not user:
             return JsonResponse({'detail': "Authentication Failed"}, status=401)
 
         # Retrieve and transform body values form bytes to JSON
@@ -70,6 +77,8 @@ def contacts(request):
         # If the Contact object is valid then save it
         if status == 'ok':
             body_obj['id'] = str(uuid.uuid4())
+            body_obj['entered_by'] = user
+            body_obj['updated_by'] = None
             CONTACTS_LIST.append(body_obj)
             return JsonResponse(body_obj, status=201)
         # Else if the Contact object is not valid return the error message.
@@ -104,7 +113,8 @@ def contact(request, contact_id):
     # DELETE - Delete a contact.
     elif request.method == 'DELETE':
         # Authenticate based on Authentication credentials located in the header
-        if not authenticate(request.META['HTTP_AUTHORIZATION']):
+        user = authenticate(request)
+        if not user:
             return JsonResponse({'detail': "Authentication Failed"}, status=401)
 
         CONTACTS_LIST.pop(index)
@@ -113,7 +123,8 @@ def contact(request, contact_id):
     # PUT - Replace a contact's data.
     elif request.method == 'PUT':
         # Authenticate based on Authentication credentials located in the header
-        if not authenticate(request.META['HTTP_AUTHORIZATION']):
+        user = authenticate(request)
+        if not user:
             return JsonResponse({'detail': "Authentication Failed"}, status=401)
 
         # Retrieve and transform body values form bytes to JSON
@@ -126,7 +137,8 @@ def contact(request, contact_id):
         if status == "ok":
             for key, value in body_obj.items():
                 CONTACTS_LIST[index][key] = value
-            return JsonResponse(body_obj, status=200)
+            CONTACTS_LIST[index]['updated_by'] = user
+            return JsonResponse(CONTACTS_LIST[index], status=200)
         # Else if the Contact object is not valid return the error message.
         else:
             return JsonResponse({"detail": message}, status=400)
@@ -145,18 +157,31 @@ def validate_contacts(body_obj):
         if isinstance(value, str) is False:
             return "'{}' field value, {}, is not a string.".format(key, value), "error"
         # Check that the given field is a valid Contact field.
-        elif key not in CONTACT_FIELDS:
+        elif key not in REQUIRED_CONTACT_FIELDS:
             return "'{}' is not a a valid Contact field".format(key), "error"
 
     # Check that all required fields are present.
-    for field in CONTACT_FIELDS:
+    for field in REQUIRED_CONTACT_FIELDS:
         if field not in (list(body_obj.keys())):
             return "Required fields are missing.", "error"
 
     return "Object is Clean!", "ok"
 
 
-def authenticate(auth_header):
+def authenticate(request):
+    """
+    Authenticate the user provided in the request header against the list of users
+    in /api/auth_credentials.py.
+
+    Returns None if authentication fails.
+
+    Returns username if authentication passes
+    """
+    try:
+        auth_header = request.META['HTTP_AUTHORIZATION']
+    except KeyError:
+        return None
+
     # Removes "Basic " to isolate credentials
     encoded_credentials = auth_header.split(' ')[1]
     # Split Username and Password
@@ -164,7 +189,7 @@ def authenticate(auth_header):
     username = decoded_credentials[0]
     password = decoded_credentials[1]
     if (username, password, encoded_credentials) in authenticated_users:
-        return True
+        return username
     else:
-        return False
+        return None
 
