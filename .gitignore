@@ -1,2 +1,7 @@
 # Pycharm configuration
 .idea/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+ua_assignment/__pycache__/
+*.pyc
