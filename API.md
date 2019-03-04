@@ -36,7 +36,9 @@
             "last_name": "Fox",
             "email": "brettfox@email.com",
             "first_name": "Brett",
-            "id": "49845a3d-f5ab-4b3a-8e16-965037549d71"
+            "id": "49845a3d-f5ab-4b3a-8e16-965037549d71",
+            "entered_by": "admin",
+            "updated_by": null
         },...
     ]
 }`
@@ -50,7 +52,9 @@
       "last_name": "Fox",
       "id": "b5d1dbd2-c16b-484f-91a2-5a77f2a7b279",
       "email": "brettfox@email.com",
-      "first_name": "Brrett"
+      "first_name": "Brrett",
+      "entered_by": "admin",
+      "updated_by": null
   }`
 
 * **Error Responses:**
@@ -105,7 +109,9 @@
     "last_name": "Fox",
     "email": "brettfox@email.com",
     "first_name": "Brett",
-    "id": "49845a3d-f5ab-4b3a-8e16-965037549d71"
+    "id": "49845a3d-f5ab-4b3a-8e16-965037549d71",
+    "entered_by": "admin",
+    "updated_by": null
 }`
 
   OR
