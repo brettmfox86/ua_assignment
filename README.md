@@ -17,4 +17,8 @@
 - Run `python manage.py runserver`
 
 ## API Endpoints
-API Endpoints can be found in the API.md file
+- /contacts/ 
+  - GET | POST
+- /contact/:contact_id
+  - GET | PUT | DELETE
+- Detailed API Endpoint information can be found in the API.md file
