@@ -184,7 +184,6 @@ def authenticate(request):
     """
     try:
         auth_header = request.META['HTTP_AUTHORIZATION']
-        print(auth_header)
     except KeyError:
         return None
 
