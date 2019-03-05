@@ -14,7 +14,8 @@ CONTACTS_LIST = [
         "last_name": "Fox",
         "email": "brettfox@email.com",
         "phone_number": "5555555555",
-        "entered_by": "admin",
+        "address": "2020 Rose St",
+        "created_by": "admin",
         "updated_by": None
     },
     {
@@ -23,7 +24,8 @@ CONTACTS_LIST = [
         "last_name": "Guy",
         "email": "Johnguy@email.com",
         "phone_number": "5555555552",
-        "entered_by": "admin",
+        "address": "Guy's House",
+        "created_by": "admin",
         "updated_by": None
     },
     {
@@ -32,12 +34,13 @@ CONTACTS_LIST = [
         "last_name": "Fox",
         "email": "Janewoman@email.com",
         "phone_number": "5555555556",
-        "entered_by": "admin",
+        "address": "Jane's house",
+        "created_by": "admin",
         "updated_by": None
     }
 ]
 
-REQUIRED_CONTACT_FIELDS = ['first_name', 'last_name', 'email', 'phone_number']
+REQUIRED_CONTACT_FIELDS = ['first_name', 'last_name', 'email', 'phone_number', 'address']
 
 
 @csrf_exempt
@@ -56,8 +59,9 @@ def contacts(request):
         for search_term, search_value in request.GET.items():
             try:
                 final_contacts = [i for i in final_contacts if i[search_term] == search_value]
-            except KeyError:  # PROPER STATUS?!?!?!?!?!?!?!?!
-                return JsonResponse({"detail": "Invalid search value '{}'".format(search_term)}, status=400)
+            except KeyError:
+                return JsonResponse({"detail": "Invalid search value '{}'".format(search_term)},
+                                    status=400)
 
         return JsonResponse({"contacts": final_contacts}, status=200)
 
@@ -77,7 +81,7 @@ def contacts(request):
         # If the Contact object is valid then save it
         if status == 'ok':
             body_obj['id'] = str(uuid.uuid4())
-            body_obj['entered_by'] = user
+            body_obj['created_by'] = user
             body_obj['updated_by'] = None
             CONTACTS_LIST.append(body_obj)
             return JsonResponse(body_obj, status=201)
@@ -101,14 +105,15 @@ def contact(request, contact_id):
     # Return an error if the Contact does not exist.
     for index, contact_obj in enumerate(CONTACTS_LIST):
         if contact_obj['id'] == contact_id:
-            final_contact = contact_obj
+            # We have successfully found the requested contact so break the loop so we can use
+            # index and contact_obj later
             break
     else:
-        return JsonResponse({"detail": "Contact does not exist."}, status=400)
+        return JsonResponse({"detail": "Contact does not exist."}, status=404)
 
     # GET - Get a contact.
     if request.method == 'GET':
-        return JsonResponse(final_contact, status=200)
+        return JsonResponse(contact_obj, status=200)
 
     # DELETE - Delete a contact.
     elif request.method == 'DELETE':
@@ -117,7 +122,7 @@ def contact(request, contact_id):
         if not user:
             return JsonResponse({'detail': "Authentication Failed"}, status=401)
 
-        CONTACTS_LIST.pop(index)
+        del CONTACTS_LIST[index]
         return JsonResponse({}, status=200)
 
     # PUT - Replace a contact's data.
@@ -154,7 +159,7 @@ def validate_contacts(body_obj):
     """
     for key, value in body_obj.items():
         # Check that the given value is a string.
-        if isinstance(value, str) is False:
+        if not isinstance(value, str):
             return "'{}' field value, {}, is not a string.".format(key, value), "error"
         # Check that the given field is a valid Contact field.
         elif key not in REQUIRED_CONTACT_FIELDS:
@@ -179,6 +184,7 @@ def authenticate(request):
     """
     try:
         auth_header = request.META['HTTP_AUTHORIZATION']
+        print(auth_header)
     except KeyError:
         return None
 
