@@ -121,7 +121,7 @@
   * **Content:** `{}`
   
 * **Error Responses:**
-  * **Code:** 400 BAD REQUEST <br />
+  * **Code:** 404 NOT FOUND <br />
   * **Content:**  `{"detail": "Contact does not exist.'"}`
 
   OR
