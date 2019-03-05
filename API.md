@@ -23,7 +23,8 @@
     "first_name": "Brett",
     "last_name": "Fox",
     "email": "brettfox@email.com",
-    "phone_number": "5555555555"
+    "phone_number": "5555555555",
+    "address": "Brett's Address
     }`
 
 * **Success Responses:**
@@ -37,6 +38,7 @@
             "email": "brettfox@email.com",
             "first_name": "Brett",
             "id": "49845a3d-f5ab-4b3a-8e16-965037549d71",
+            "address": "Brett's Address,
             "created_by": "admin",
             "updated_by": null
         },...
@@ -53,6 +55,7 @@
       "id": "b5d1dbd2-c16b-484f-91a2-5a77f2a7b279",
       "email": "brettfox@email.com",
       "first_name": "Brrett",
+      "address": "Brett's Address,
       "created_by": "admin",
       "updated_by": null
   }`
@@ -98,7 +101,8 @@
     "first_name": "Brett",
     "last_name": "Fox",
     "email": "brettfox@email.com",
-    "phone_number": "5555555555"
+    "phone_number": "5555555555",
+    "address": "Brett's Address
     }`
 
 * **Success Responses:**
@@ -110,6 +114,7 @@
     "email": "brettfox@email.com",
     "first_name": "Brett",
     "id": "49845a3d-f5ab-4b3a-8e16-965037549d71",
+    "address": "Brett's Address,
     "created_by": "admin",
     "updated_by": null
 }`
